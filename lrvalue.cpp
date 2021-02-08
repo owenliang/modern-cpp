@@ -11,6 +11,7 @@ void test(const std::vector<int>& vec) {
 // 打开宏注释可以走到右值引用版本
 #if 0
 void test(std::vector<int>&& vec) {
+    std::cout << "in fact, vec is lvalue now, " << &vec << std::endl;
     std::vector<int> steal = std::move(vec);
     std::cout << "std::vector<int>&&, " << "steal size:" << steal.size() << ", rvalue size:" << vec.size() << std::endl;
 }
