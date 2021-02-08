@@ -1,5 +1,5 @@
 # modern-cpp
-现代cplusplus的小探索哦~都是入门级的~非常精炼~
+现代cplusplus的小探索哦~ 都是入门级的~ 非常精炼~
 
 # Agenda
 
