@@ -9,7 +9,7 @@ double sum(T v) {
 
 template<typename T, typename... Args>
 double sum(T v, Args... args) {
-    return static_cast<double>(v) + sum(args...);
+    return v + sum(args...);
 }
 
 //////////////////////////////////////////////////
@@ -17,9 +17,9 @@ double sum(T v, Args... args) {
 template <typename T, typename... Args>
 double sum_super_cool(T v, Args... args) {
     if constexpr (sizeof...(args) == 0) {
-        return static_cast<double>(v);
+        return v;
     }
-    return static_cast<double>(v) + sum(args...);
+    return v + sum(args...);
 }
 
 int main(int argc, char** argv) {
