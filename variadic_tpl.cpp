@@ -17,8 +17,9 @@ template <typename T, typename... Args>
 double sum_super_cool(T v, Args... args) {
     if constexpr (sizeof...(args) == 0) {
         return v;
+    } else {
+        return v + sum_super_cool(args...);
     }
-    return v + sum(args...);
 }
 
 int main(int argc, char** argv) {
@@ -26,7 +27,7 @@ int main(int argc, char** argv) {
     std::cout << s << std::endl;
 
     double ss = sum_super_cool(1, 1.1, 2.2, 3, 4.5);
-    std::cout << s << std::endl;
+    std::cout << ss << std::endl;
     return 0;
 }
 
@@ -39,6 +40,6 @@ int main(int argc, char** argv) {
 
 sum_super_cool函数告诉我们：
     1，利用if constexpr可以在模板实例化过程中根据args参数个数来修剪代码~
-    2，修剪的效果就是如果args列表长度为0就会直接把代码编译为return static_cast<double>(v)，后面的return代码就被删掉了。
+    2，修剪的效果就是如果args列表长度为0就会直接把代码编译为return static_cast<double>(v)，那么else部分就被删减了。
     3，如果args列表长度不为0，那么if constexpr内的代码就被删掉了。
 */
