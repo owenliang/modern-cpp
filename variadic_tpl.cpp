@@ -2,9 +2,8 @@
 // g++ -std=c++17 -o variadic_tpl variadic_tpl.cpp
 #include <iostream>
 
-template<typename T>
-double sum(T v) {
-    return v;
+double sum() {
+    return 0;
 }
 
 template<typename T, typename... Args>
