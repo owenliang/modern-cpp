@@ -53,17 +53,15 @@ size_t _distance1(Iter s, Iter e) {
     return d;
 }
 
-// distance版本2：基于重载+SFINAE原理实现分别处理
-template<typename Iter>
-size_t _distance2(typename _enable_if<_is_same<typename std::iterator_traits<Iter>::iterator_category, std::random_access_iterator_tag>::value, Iter>::type s, 
-    typename _enable_if<_is_same<typename std::iterator_traits<Iter>::iterator_category, std::random_access_iterator_tag>::value, Iter>::type e) {
+// distance版本2：模板参数+SFINAE
+template<typename Iter, typename _enable_if<_is_same<typename std::iterator_traits<Iter>::iterator_category, std::random_access_iterator_tag>::value, int>::type = 0>
+size_t _distance2(Iter s, Iter e) {
     std::cout << "_distance2 版本A" << std::endl;
     return e - s;
 }
 
-template<typename Iter>
-size_t _distance2(typename _enable_if<!_is_same<typename std::iterator_traits<Iter>::iterator_category, std::random_access_iterator_tag>::value, Iter>::type s, 
-    typename _enable_if<!_is_same<typename std::iterator_traits<Iter>::iterator_category, std::random_access_iterator_tag>::value, Iter>::type e) {
+template<typename Iter, typename _enable_if<!_is_same<typename std::iterator_traits<Iter>::iterator_category, std::random_access_iterator_tag>::value, int>::type = 0>
+size_t _distance2(Iter s, Iter e) {
     size_t d = 0;
     while (s != e) {
         ++s;
@@ -73,16 +71,34 @@ size_t _distance2(typename _enable_if<!_is_same<typename std::iterator_traits<It
     return d;
 }
 
+// distance版本3：返回值+SFINAE
+template<typename Iter>
+typename _enable_if<_is_same<typename std::iterator_traits<Iter>::iterator_category, std::random_access_iterator_tag>::value, size_t>::type _distance3(Iter s, Iter e) {
+    std::cout << "_distance3 版本A" << std::endl;
+    return e - s;
+}
+
+template<typename Iter>
+typename _enable_if<!_is_same<typename std::iterator_traits<Iter>::iterator_category, std::random_access_iterator_tag>::value, size_t>::type _distance3(Iter s, Iter e) {
+    size_t d = 0;
+    while (s != e) {
+        ++s;
+        ++d;
+    }
+    std::cout << "_distance3 版本B" << std::endl;
+    return d;
+}
+
 int main(int argc, char** argv) {
     std::vector<int> vec{1,2,3,4,5};
     size_t d1 = _distance1(vec.begin(), vec.begin() + 3);
-    using vector_iterator = std::vector<int>::iterator;
-    d1 = _distance2<vector_iterator>(vec.begin(), vec.begin() + 3);
+    d1 = _distance2(vec.begin(), vec.begin() + 3);
+    d1 = _distance3(vec.begin(), vec.begin() + 3);
 
     std::map<std::string, int> m{{"a", 10}, {"b", 11}, {"c", 12}, {"d", 13}};
     size_t d2 = _distance1(m.find("a"), m.find("d"));
-    using map_iterator = std::map<std::string, int>::iterator;
-    d2 = _distance2<map_iterator>(m.find("a"), m.find("d"));
+    d2 = _distance2(m.find("a"), m.find("d"));
+    d2 = _distance3(m.find("a"), m.find("d"));
     return 0;
 }
 
@@ -91,5 +107,6 @@ int main(int argc, char** argv) {
     1,模板元编程的基础是strcut的特化和属性来实现的
     2,调用模板函数时，编译器会在多个候选版本中尝试实例化并选择匹配度最高的
     3,在尝试实例化过程中，如果有语法编译失败情况（这里的_enable_if<false,T>::value可能就没有）则会跳过该函数版本继续匹配其他版本
-    4,_distance2实际上不如if constexpr好用，因为它的函数形参类型经过_enable_if的提取后就无法自动推断了，导致必须调用时显式传递类型 ):
+    4,_distance2借助_enable_if+_is_same在模板参数中触发SFINAE，走了一个int=0的无效模板参数方式来埋入这个断言
+    5,_distance3借助_enable_if+_is_same在函数返回值中触发SFINAE，也是一个常见方式
 */
