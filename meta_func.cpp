@@ -43,14 +43,15 @@ size_t _distance1(Iter s, Iter e) {
     if constexpr (_is_same<category, std::random_access_iterator_tag>::value) {
         std::cout << "_distance1 版本A" << std::endl;
         return e - s;
+    } else {
+        size_t d = 0;
+        while (s != e) {
+            ++s;
+            ++d;
+        }
+        std::cout << "_distance1 版本B" << std::endl;
+        return d;
     }
-    size_t d = 0;
-    while (s != e) {
-        ++s;
-        ++d;
-    }
-    std::cout << "_distance1 版本B" << std::endl;
-    return d;
 }
 
 // distance版本2：模板参数+SFINAE
