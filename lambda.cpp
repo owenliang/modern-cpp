@@ -15,6 +15,6 @@ int main(int argc, char** argv) {
     std::cout << f2() << std::endl;
 
     std::function<int ()> f = f2;
-    std::cout << f2() << std::endl;
+    std::cout << f() << std::endl;
     return 0;
 }
